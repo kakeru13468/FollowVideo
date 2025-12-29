@@ -1,16 +1,15 @@
 # VideoFollow
 
-A React component library for synchronizing video playback with lyrics display. Easily sync YouTube videos with timestamped lyrics.
+A React Hook for synchronizing video playback with lyrics. Build your own custom lyrics player with full control over styling.
 
 [中文文件](./README.md)
 
 ## Features
 
-- **Time Sync** - Automatically highlight current lyrics based on video playback
+- **Time Sync** - Automatically track current lyric based on video playback
 - **Click to Seek** - Click on any lyric to jump to that timestamp
-- **Auto Scroll** - Lyrics auto-scroll to follow current playback position
-- **Multiple Display Modes** - Card and plain text display styles
-- **Floating Lyrics** - Display current lyrics overlaid on video
+- **Custom UI** - Logic only, you control the styling
+- **Easy Integration** - Works with any video player
 
 ## Installation
 
@@ -21,82 +20,98 @@ npm install video-follow react-player
 ## Quick Start
 
 ```jsx
-import { VideoFollowPlayer } from 'video-follow';
-import 'video-follow/src/components/VideoFollowPlayer.css';
-import 'video-follow/src/components/LyricsDisplay.css';
+import { useVideoSync } from 'video-follow';
+import ReactPlayer from 'react-player';
 
 const lyricsData = [
-  { time: "00:00:15,500", text: "First line of lyrics" },
-  { time: "00:00:20,000", text: "Second line of lyrics" },
-  { time: "00:00:25,500", text: "Third line of lyrics" },
+  { time: "00:00:15,500", text: "First line" },
+  { time: "00:00:20,000", text: "Second line" },
 ];
 
-function App() {
+function MyLyricsPlayer({ videoUrl, lyricsData }) {
+  const { currentIndex, bindPlayer, seekToLyric } = useVideoSync(lyricsData);
+
   return (
-    <VideoFollowPlayer
-      videoUrl="https://www.youtube.com/watch?v=your-video-id"
-      lyricsData={lyricsData}
-      title="Song Title"
-    />
+    <div>
+      {/* Video */}
+      <ReactPlayer url={videoUrl} {...bindPlayer} controls />
+      
+      {/* Lyrics - fully customizable */}
+      <div>
+        {lyricsData.map((line, index) => (
+          <p
+            key={index}
+            style={{
+              color: index === currentIndex ? 'blue' : 'black',
+              fontWeight: index === currentIndex ? 'bold' : 'normal',
+              cursor: 'pointer',
+            }}
+            onClick={() => seekToLyric(index)}
+          >
+            {line.text}
+          </p>
+        ))}
+      </div>
+    </div>
   );
 }
 ```
 
-## Component API
+## API
 
-### VideoFollowPlayer
+### useVideoSync(lyricsData)
 
-Main player component that integrates video with synchronized lyrics.
+Core Hook that provides lyrics synchronization.
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `videoUrl` | string | - | Video URL (supports YouTube, etc.) |
-| `lyricsData` | array | `[]` | Array of lyrics data |
-| `title` | string | `''` | Title |
-| `showControls` | boolean | `true` | Show control bar |
-| `showTimestamp` | boolean | `false` | Show timestamps in lyrics |
-| `displayMode` | string | `'card'` | Display mode: `'card'` \| `'plain'` |
-| `floatingLyrics` | boolean | `true` | Show floating lyrics overlay |
+#### Parameters
 
-### LyricsDisplay
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `lyricsData` | array | Array of lyrics `[{ time, text }]` |
 
-Standalone lyrics display component.
+#### Returns
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `lyricsData` | array | `[]` | Array of lyrics data |
-| `currentIndex` | number | `-1` | Currently highlighted lyric index |
-| `onLyricClick` | function | - | Callback when lyric is clicked |
-| `displayMode` | string | `'card'` | Display mode |
+| Property | Type | Description |
+|----------|------|-------------|
+| `currentIndex` | number | Current lyric index |
+| `currentLyric` | object | Current lyric object `{ time, text }` |
+| `isPlaying` | boolean | Playback state |
+| `bindPlayer` | object | Props to bind to ReactPlayer |
+| `seekToLyric` | function | Jump to specific lyric `(index) => void` |
+| `seekToTime` | function | Jump to specific time `(time) => void` |
+| `goToPrevious` | function | Go to previous lyric |
+| `goToNext` | function | Go to next lyric |
+| `togglePlay` | function | Toggle play/pause |
+| `play` | function | Play |
+| `pause` | function | Pause |
 
-### useVideoSync Hook
+### bindPlayer
 
-Core sync hook for building custom players.
+Convenience object to spread onto ReactPlayer:
 
 ```jsx
-import { useVideoSync } from 'video-follow';
+<ReactPlayer url={videoUrl} {...bindPlayer} />
+```
 
-const {
-  currentIndex,      // Current lyric index
-  isPlaying,         // Playback state
-  playerRef,         // Player reference
-  handleProgress,    // Progress update handler
-  seekTo,            // Seek to specific time
-  goToPrevious,      // Go to previous lyric
-  goToNext,          // Go to next lyric
-  togglePlay,        // Toggle play/pause
-} = useVideoSync(lyricsData, options);
+Equivalent to:
+
+```jsx
+<ReactPlayer
+  url={videoUrl}
+  ref={bindPlayer.ref}
+  playing={bindPlayer.playing}
+  onProgress={bindPlayer.onProgress}
+  onPlay={bindPlayer.onPlay}
+  onPause={bindPlayer.onPause}
+/>
 ```
 
 ## Lyrics Data Format
 
 ```javascript
 const lyricsData = [
-  { 
-    time: "00:00:15,500",  // SRT timestamp format (HH:MM:SS,mmm)
-    text: "Lyric content"  // Lyric text
-  },
-  // ...
+  { time: "00:00:15,500", text: "Lyric content" },  // SRT timestamp format
+  { time: "00:00:20,000", text: "Next line" },
 ];
 ```
 

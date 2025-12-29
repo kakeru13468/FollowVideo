@@ -1,21 +1,32 @@
 /**
- * VideoFollow - 影片與歌詞同步組件庫
+ * VideoFollow - 影片與歌詞同步核心功能
  * 
- * @description 將 YouTube 等影片與時間戳歌詞同步顯示的 React 組件
- * @author VideoFollow Contributors
- * @license MIT
+ * 提供 Hook 讓您輕鬆建立自訂的歌詞同步播放器
+ * 
+ * @example
+ * import { useVideoSync } from 'video-follow';
+ * import ReactPlayer from 'react-player';
+ * 
+ * function MyPlayer({ lyricsData }) {
+ *   const { currentIndex, bindPlayer, seekToLyric } = useVideoSync(lyricsData);
+ *   
+ *   return (
+ *     <div>
+ *       <ReactPlayer url="..." {...bindPlayer} />
+ *       {lyricsData.map((line, i) => (
+ *         <p 
+ *           key={i}
+ *           style={{ color: i === currentIndex ? 'blue' : 'black' }}
+ *           onClick={() => seekToLyric(i)}
+ *         >
+ *           {line.text}
+ *         </p>
+ *       ))}
+ *     </div>
+ *   );
+ * }
  */
 
-// 組件
-export { default as VideoFollowPlayer } from './components/VideoFollowPlayer';
-export { default as LyricsDisplay } from './components/LyricsDisplay';
-
-// Hooks
+// 核心 Hook
 export { useVideoSync } from './hooks/useVideoSync';
-
-// 工具函數
-export {
-    convertTimeToSeconds,
-    formatTime,
-    findCurrentLyricIndex,
-} from './utils/timeUtils';
+export { default } from './hooks/useVideoSync';
