@@ -1,4 +1,4 @@
-# VideoFollow
+# FollowVideo
 
 A React Hook for synchronizing video playback with lyrics. Build your own custom lyrics player with full control over styling.
 
@@ -8,13 +8,12 @@ A React Hook for synchronizing video playback with lyrics. Build your own custom
 
 - **Time Sync** - Automatically track current lyric based on video playback
 - **Click to Seek** - Click on any lyric to jump to that timestamp
-- **Custom UI** - Logic only, you control the styling
 - **Easy Integration** - Works with any video player
 
 ## Installation
 
 ```bash
-npm install video-follow react-player
+npm install react-player@2 github:kakeru13468/FollowVideo
 ```
 
 ## Quick Start

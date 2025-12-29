@@ -1,4 +1,4 @@
-# VideoFollow
+# FollowVideo
 
 影片與歌詞同步的 React Hook。讓您輕鬆建立自訂樣式的歌詞同步播放器。
 
@@ -8,13 +8,12 @@
 
 - **時間同步** - 根據影片播放進度自動追蹤當前歌詞
 - **點擊跳轉** - 點擊歌詞跳轉到對應時間點
-- **自訂 UI** - 只提供邏輯，UI 完全由您決定
 - **簡單整合** - 可與任何影片播放器搭配使用
 
 ## 安裝
 
 ```bash
-npm install video-follow react-player
+npm install react-player@2 github:kakeru13468/FollowVideo
 ```
 
 ## 快速開始

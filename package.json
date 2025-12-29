@@ -1,27 +1,36 @@
 {
     "name": "video-follow",
     "version": "1.0.0",
-    "description": "React component library for synchronizing video playback with lyrics display",
+    "description": "React Hook for synchronizing video playback with lyrics - build your own custom lyrics player",
     "main": "src/index.js",
     "module": "src/index.js",
     "keywords": [
         "react",
+        "react-hook",
         "video",
         "lyrics",
         "sync",
+        "synchronization",
         "youtube",
         "karaoke",
-        "subtitles"
+        "subtitles",
+        "react-player"
     ],
-    "author": "",
+    "author": "kakeru13468",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/kakeru13468/FollowVideo.git"
     },
+    "homepage": "https://github.com/kakeru13468/FollowVideo#readme",
+    "bugs": {
+        "url": "https://github.com/kakeru13468/FollowVideo/issues"
+    },
+    "files": [
+        "src"
+    ],
     "peerDependencies": {
         "react": ">=17.0.0",
-        "react-dom": ">=17.0.0",
         "react-player": "^2.0.0"
     },
     "devDependencies": {
