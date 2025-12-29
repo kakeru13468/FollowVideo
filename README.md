@@ -35,7 +35,7 @@ function MyLyricsPlayer({ videoUrl, lyricsData }) {
       {/* 影片 */}
       <ReactPlayer url={videoUrl} {...bindPlayer} controls />
       
-      {/* 歌詞 - 完全自訂樣式 */}
+      {/* 歌詞 */}
       <div>
         {lyricsData.map((line, index) => (
           <p
