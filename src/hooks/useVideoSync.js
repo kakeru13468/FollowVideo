@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { convertTimeToSeconds, findCurrentLyricIndex } from '../utils/timeUtils';
 
 /**
@@ -23,6 +23,9 @@ export const useVideoSync = (lyricsData = [], options = {}) => {
 
     // 引用
     const playerRef = useRef(null);
+    // 使用 ref 來追蹤最新的 isFollowMode 值，避免閉包問題
+    const isFollowModeRef = useRef(isFollowMode);
+    isFollowModeRef.current = isFollowMode;
 
     /**
      * 處理播放進度更新
@@ -32,58 +35,77 @@ export const useVideoSync = (lyricsData = [], options = {}) => {
         const currentTime = progress.playedSeconds;
         const index = findCurrentLyricIndex(currentTime, lyricsData);
 
-        if (index !== -1 && index !== currentIndex) {
-            setCurrentIndex(index);
+        if (index !== -1) {
+            setCurrentIndex(prevIndex => {
+                if (index !== prevIndex) {
+                    // 自動滾動到當前歌詞
+                    if (autoScroll && isFollowModeRef.current) {
+                        const lyricElement = document.getElementById(`lyric-${index}`);
+                        const container = document.getElementById(scrollContainerId);
 
-            // 自動滾動到當前歌詞
-            if (autoScroll && isFollowMode) {
-                const lyricElement = document.getElementById(`lyric-${index}`);
-                const container = document.getElementById(scrollContainerId);
+                        if (lyricElement && container) {
+                            const containerRect = container.getBoundingClientRect();
+                            const lyricRect = lyricElement.getBoundingClientRect();
+                            const scrollPosition = lyricRect.top - containerRect.top + container.scrollTop - scrollOffset;
 
-                if (lyricElement && container) {
-                    const containerRect = container.getBoundingClientRect();
-                    const lyricRect = lyricElement.getBoundingClientRect();
-                    const scrollPosition = lyricRect.top - containerRect.top + container.scrollTop - scrollOffset;
-
-                    container.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+                            container.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+                        }
+                    }
+                    return index;
                 }
-            }
+                return prevIndex;
+            });
         }
-    }, [lyricsData, currentIndex, autoScroll, isFollowMode, scrollContainerId, scrollOffset]);
+    }, [lyricsData, autoScroll, scrollContainerId, scrollOffset]);
 
     /**
      * 跳轉到指定時間
      * @param {string} time - SRT 格式時間戳
      */
     const seekTo = useCallback((time) => {
-        if (!isFollowMode) return;
+        // 使用 ref 來獲取最新的值
+        if (!isFollowModeRef.current) return;
 
         const seconds = convertTimeToSeconds(time);
         if (playerRef.current?.seekTo) {
             playerRef.current.seekTo(seconds);
             setIsPlaying(true);
         }
-    }, [isFollowMode]);
+    }, []);
 
     /**
      * 跳轉到上一句歌詞
      */
     const goToPrevious = useCallback(() => {
-        if (currentIndex > 0 && lyricsData[currentIndex - 1]) {
-            seekTo(lyricsData[currentIndex - 1].time);
-            setCurrentIndex(currentIndex - 1);
-        }
-    }, [currentIndex, lyricsData, seekTo]);
+        setCurrentIndex(prevIndex => {
+            if (prevIndex > 0 && lyricsData[prevIndex - 1]) {
+                const seconds = convertTimeToSeconds(lyricsData[prevIndex - 1].time);
+                if (playerRef.current?.seekTo) {
+                    playerRef.current.seekTo(seconds);
+                    setIsPlaying(true);
+                }
+                return prevIndex - 1;
+            }
+            return prevIndex;
+        });
+    }, [lyricsData]);
 
     /**
      * 跳轉到下一句歌詞
      */
     const goToNext = useCallback(() => {
-        if (currentIndex < lyricsData.length - 1 && lyricsData[currentIndex + 1]) {
-            seekTo(lyricsData[currentIndex + 1].time);
-            setCurrentIndex(currentIndex + 1);
-        }
-    }, [currentIndex, lyricsData, seekTo]);
+        setCurrentIndex(prevIndex => {
+            if (prevIndex < lyricsData.length - 1 && lyricsData[prevIndex + 1]) {
+                const seconds = convertTimeToSeconds(lyricsData[prevIndex + 1].time);
+                if (playerRef.current?.seekTo) {
+                    playerRef.current.seekTo(seconds);
+                    setIsPlaying(true);
+                }
+                return prevIndex + 1;
+            }
+            return prevIndex;
+        });
+    }, [lyricsData]);
 
     /**
      * 切換跟播模式

@@ -6,11 +6,11 @@ A React component library for synchronizing video playback with lyrics display. 
 
 ## Features
 
-- 🎵 **Time Sync** - Automatically highlight current lyrics based on video playback
-- 🖱️ **Click to Seek** - Click on any lyric to jump to that timestamp
-- 📜 **Follow Mode** - Lyrics auto-scroll to follow current playback position
-- 🎨 **Multiple Display Modes** - Card and plain text display styles
-- 💬 **Floating Lyrics** - Display current lyrics overlaid on video
+- **Time Sync** - Automatically highlight current lyrics based on video playback
+- **Click to Seek** - Click on any lyric to jump to that timestamp
+- **Auto Scroll** - Lyrics auto-scroll to follow current playback position
+- **Multiple Display Modes** - Card and plain text display styles
+- **Floating Lyrics** - Display current lyrics overlaid on video
 
 ## Installation
 
@@ -79,13 +79,11 @@ import { useVideoSync } from 'video-follow';
 const {
   currentIndex,      // Current lyric index
   isPlaying,         // Playback state
-  isFollowMode,      // Follow mode state
   playerRef,         // Player reference
   handleProgress,    // Progress update handler
   seekTo,            // Seek to specific time
   goToPrevious,      // Go to previous lyric
   goToNext,          // Go to next lyric
-  toggleFollowMode,  // Toggle follow mode
   togglePlay,        // Toggle play/pause
 } = useVideoSync(lyricsData, options);
 ```

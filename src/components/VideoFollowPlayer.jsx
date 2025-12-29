@@ -108,14 +108,6 @@ const VideoFollowPlayer = ({
                         >
                             ⏭️
                         </button>
-
-                        <button
-                            onClick={toggleFollowMode}
-                            className={`vf-control-btn ${isFollowMode ? 'vf-active' : ''}`}
-                            title={isFollowMode ? '關閉跟播' : '開啟跟播'}
-                        >
-                            {isFollowMode ? '🔗' : '🔓'}
-                        </button>
                     </div>
                 )}
             </div>

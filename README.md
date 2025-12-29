@@ -8,7 +8,7 @@
 
 - **時間同步** - 根據影片播放進度自動高亮當前歌詞
 - **點擊跳轉** - 點擊歌詞跳轉到對應時間點
-- **跟播模式** - 歌詞自動滾動跟隨當前播放位置
+- **自動滾動** - 歌詞自動滾動跟隨當前播放位置
 - **多種顯示模式** - 支援卡片和純文字兩種顯示樣式
 - **浮動歌詞** - 影片上方顯示當前歌詞
 
@@ -79,13 +79,11 @@ import { useVideoSync } from 'video-follow';
 const {
   currentIndex,      // 當前歌詞索引
   isPlaying,         // 是否正在播放
-  isFollowMode,      // 跟播模式狀態
   playerRef,         // 播放器引用
   handleProgress,    // 進度更新處理
   seekTo,            // 跳轉到指定時間
   goToPrevious,      // 上一句
   goToNext,          // 下一句
-  toggleFollowMode,  // 切換跟播模式
   togglePlay,        // 切換播放/暫停
 } = useVideoSync(lyricsData, options);
 ```
