@@ -1,18 +1,40 @@
 import { useState, useRef, useCallback } from 'react';
 
 /**
- * 將 SRT 格式時間戳轉換為秒數
- * @param {string} timeString - 時間字串，格式：HH:MM:SS,mmm 或 HH:MM:SS
+ * 將各種格式的時間戳轉換為秒數
+ * 支援：純秒數數字/字串 (例如 12.34, "12.34")、分:秒 (例如 "01:23", "01:23.45")、標準時:分:秒 (例如 "00:01:23,456", "00:01:23.456")
+ * @param {string|number} timeVal - 時間值
  * @returns {number} 總秒數
  */
-const convertTimeToSeconds = (timeString) => {
-    const parts = timeString.split(/[:,]/);
-    const hours = parseInt(parts[0], 10) || 0;
-    const minutes = parseInt(parts[1], 10) || 0;
-    const seconds = parseInt(parts[2], 10) || 0;
-    const milliseconds = parseInt(parts[3], 10) || 0;
-
-    return hours * 3600 + minutes * 60 + seconds + milliseconds / 1000;
+const convertTimeToSeconds = (timeVal) => {
+    if (typeof timeVal === 'number') return timeVal;
+    if (!timeVal) return 0;
+    
+    const timeStr = String(timeVal).trim();
+    
+    // 如果是純數字秒數字串，例如 "12.34"
+    if (!timeStr.includes(':')) {
+        const parsed = parseFloat(timeStr);
+        return isNaN(parsed) ? 0 : parsed;
+    }
+    
+    // 統一處理毫秒分隔符（將逗號取代為點，以便 parseFloat 解析秒和毫秒）
+    const normalizedStr = timeStr.replace(',', '.');
+    const parts = normalizedStr.split(':');
+    
+    if (parts.length === 2) {
+        // 格式：MM:SS.mmm
+        return (parseInt(parts[0], 10) || 0) * 60 + (parseFloat(parts[1]) || 0);
+    }
+    if (parts.length >= 3) {
+        // 格式：HH:MM:SS.mmm
+        return (
+            (parseInt(parts[0], 10) || 0) * 3600 +
+            (parseInt(parts[1], 10) || 0) * 60 +
+            (parseFloat(parts[2]) || 0)
+        );
+    }
+    return 0;
 };
 
 /**
